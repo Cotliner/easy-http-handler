@@ -34,11 +34,10 @@ class CustomResponseExceptionHandler {
         }
     }
 
-
     @ExceptionHandler(CustomException::class) fun handleCustomException(
             ex: CustomException,
             request: ServerHttpRequest
-    ): ResponseEntity<ErrorDetails> = ResponseEntity(error(ex.message!!, request, ex.httpCode(), ex.code), ex.httpCode())
+    ): ResponseEntity<ErrorDetails> = ResponseEntity(error(ex.message, request, ex.httpCode(), ex.code), ex.httpCode())
 
     @ExceptionHandler(ConstraintViolationException::class) fun handleCustomException(
             ex: ConstraintViolationException,
