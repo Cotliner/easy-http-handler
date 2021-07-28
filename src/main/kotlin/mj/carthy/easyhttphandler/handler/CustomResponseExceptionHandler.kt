@@ -3,6 +3,7 @@ package mj.carthy.easyhttphandler.handler
 import com.mongodb.MongoWriteException
 import mj.carthy.easyutils.exception.CustomException
 import mj.carthy.easyutils.helper.Errors.Companion.SERVER_ERROR
+import mj.carthy.easyutils.helper.Errors.Companion.VALIDATION_ERROR
 import mj.carthy.easyutils.helper.error
 import mj.carthy.easyutils.helper.toMutableSet
 import mj.carthy.easyutils.model.CustomFieldError
@@ -63,7 +64,7 @@ class CustomResponseExceptionHandler {
             ex,
             request,
             BAD_REQUEST,
-            SERVER_ERROR
+            VALIDATION_ERROR
     ).copy(fieldErrors = ex.bindingResult.fieldErrors.stream().map { elem ->
         createCustomFieldError(elem)
     }.toMutableSet()), BAD_REQUEST)
