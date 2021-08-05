@@ -5,7 +5,6 @@ import mj.carthy.easyutils.exception.CustomException
 import mj.carthy.easyutils.helper.Errors.Companion.SERVER_ERROR
 import mj.carthy.easyutils.helper.Errors.Companion.VALIDATION_ERROR
 import mj.carthy.easyutils.helper.error
-import mj.carthy.easyutils.helper.toMutableSet
 import mj.carthy.easyutils.model.CustomFieldError
 import mj.carthy.easyutils.model.ErrorDetails
 import org.apache.commons.lang3.StringUtils.EMPTY
@@ -27,12 +26,6 @@ class CustomResponseExceptionHandler {
     companion object {
         private const val OPEN_BRACKET = "{"
         private const val DOUBLE_DOT = ":"
-
-        private fun createCustomFieldError(fieldError: FieldError): CustomFieldError {
-            val defaultMessage: String = fieldError.defaultMessage ?: EMPTY
-            val code: String = fieldError.code ?: EMPTY
-            return CustomFieldError(fieldError.field, defaultMessage, code)
-        }
     }
 
     @ExceptionHandler(CustomException::class) fun handleCustomException(
@@ -53,9 +46,7 @@ class CustomResponseExceptionHandler {
             request,
             BAD_REQUEST,
             SERVER_ERROR
-    ).copy(fieldErrors = ex.bindingResult.fieldErrors.stream().map { elem ->
-        createCustomFieldError(elem)
-    }.toMutableSet()), BAD_REQUEST)
+    ).copy(fieldErrors = ex.bindingResult.fieldErrors.map { it.toCustomFieldError() }.toSet()), BAD_REQUEST)
 
     @ExceptionHandler(WebExchangeBindException::class) fun handleWebExchangeBindException(
             ex: WebExchangeBindException,
@@ -65,9 +56,7 @@ class CustomResponseExceptionHandler {
             request,
             BAD_REQUEST,
             VALIDATION_ERROR
-    ).copy(fieldErrors = ex.bindingResult.fieldErrors.stream().map { elem ->
-        createCustomFieldError(elem)
-    }.toMutableSet()), BAD_REQUEST)
+    ).copy(fieldErrors = ex.bindingResult.fieldErrors.map { it.toCustomFieldError() }.toSet()), BAD_REQUEST)
 
     @ExceptionHandler(MongoWriteException::class) fun handleMongoWriteException(
         ex: MongoWriteException,
@@ -83,4 +72,6 @@ class CustomResponseExceptionHandler {
             ex: NullPointerException,
             request: ServerHttpRequest
     ): ResponseEntity<ErrorDetails> = ResponseEntity(error(ex, request, BAD_REQUEST, SERVER_ERROR), BAD_REQUEST)
+
+    private fun FieldError.toCustomFieldError() = CustomFieldError(this.field, this.defaultMessage ?: EMPTY, this.code ?: EMPTY)
 }
