@@ -1,9 +1,11 @@
 package mj.carthy.easyhttphandler.handler
 
 import com.mongodb.MongoWriteException
+import io.jsonwebtoken.SignatureException
 import mj.carthy.easyutils.exception.CustomException
 import mj.carthy.easyutils.helper.Errors.Companion.SERVER_ERROR
 import mj.carthy.easyutils.helper.Errors.Companion.VALIDATION_ERROR
+import mj.carthy.easyutils.helper.Errors.Companion.AUTHENTIFICATION_DENIED
 import mj.carthy.easyutils.helper.error
 import mj.carthy.easyutils.model.CustomFieldError
 import mj.carthy.easyutils.model.ErrorDetails
@@ -11,6 +13,7 @@ import org.apache.commons.lang3.StringUtils.EMPTY
 import org.apache.commons.lang3.math.NumberUtils.INTEGER_ONE
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
+import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.ResponseEntity
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.validation.FieldError
@@ -57,6 +60,16 @@ class CustomResponseExceptionHandler {
             BAD_REQUEST,
             VALIDATION_ERROR
     ).copy(fieldErrors = ex.bindingResult.fieldErrors.map { it.toCustomFieldError() }.toSet()), BAD_REQUEST)
+
+    @ExceptionHandler(SignatureException::class) fun handleSignatureException(
+      ex: SignatureException,
+      request: ServerHttpRequest
+    ): ResponseEntity<ErrorDetails> = ResponseEntity(error(
+      ex,
+      request,
+      FORBIDDEN,
+      AUTHENTIFICATION_DENIED
+    ), FORBIDDEN)
 
     @ExceptionHandler(MongoWriteException::class) fun handleMongoWriteException(
         ex: MongoWriteException,

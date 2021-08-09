@@ -17,6 +17,8 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<kotlin.version>1.5.10</kotlin.version>
+		<!--OTHER LIBRARIES-->
+		<io.jsonwebtoken>0.9.1</io.jsonwebtoken>
 	</properties>
 
 	<dependencies>
@@ -44,13 +46,18 @@
 			<groupId>org.jetbrains.kotlinx</groupId>
 			<artifactId>kotlinx-coroutines-reactor</artifactId>
 		</dependency>
-
+		<!--OTHER LIBRARIES-->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>${io.jsonwebtoken}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons-lang3.version}</version>
 		</dependency>
-		<!--Personal Libraries-->
+		<!--PERSONAL LIBRARIES-->
 		<dependency>
 			<groupId>mj.carthy</groupId>
 			<artifactId>easy-utils</artifactId>
