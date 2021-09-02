@@ -1,11 +1,12 @@
 package mj.carthy.easyhttphandler.handler
 
 import com.mongodb.MongoWriteException
+import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.SignatureException
 import mj.carthy.easyutils.exception.CustomException
+import mj.carthy.easyutils.helper.Errors.Companion.AUTHENTICATION_DENIED
 import mj.carthy.easyutils.helper.Errors.Companion.SERVER_ERROR
 import mj.carthy.easyutils.helper.Errors.Companion.VALIDATION_ERROR
-import mj.carthy.easyutils.helper.Errors.Companion.AUTHENTIFICATION_DENIED
 import mj.carthy.easyutils.helper.error
 import mj.carthy.easyutils.model.CustomFieldError
 import mj.carthy.easyutils.model.ErrorDetails
@@ -68,7 +69,17 @@ class CustomResponseExceptionHandler {
       ex,
       request,
       FORBIDDEN,
-      AUTHENTIFICATION_DENIED
+      AUTHENTICATION_DENIED
+    ), FORBIDDEN)
+
+    @ExceptionHandler(MalformedJwtException::class) fun handleMalformedJwtException(
+      ex: MalformedJwtException,
+      request: ServerHttpRequest
+    ): ResponseEntity<ErrorDetails> = ResponseEntity(error(
+      ex,
+      request,
+      FORBIDDEN,
+      AUTHENTICATION_DENIED
     ), FORBIDDEN)
 
     @ExceptionHandler(MongoWriteException::class) fun handleMongoWriteException(
